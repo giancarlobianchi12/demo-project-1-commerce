@@ -16,13 +16,8 @@ class Order extends Model
         'title',
         'status',
         'price',
-        'driver_user_id',
-        'receiver_id',
         'external_shipment_id',
-        'zone_id',
-        'client_user_id',
         'delivered_at',
-        'attempts',
         'user_id',
     ];
 }
