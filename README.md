@@ -1,66 +1,93 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Demo Project - 1-commerce
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a Laravel-based project that utilizes Sail to streamline the development environment setup.
 
-## About Laravel
+## Installation
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+To get started with the project, follow these steps:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 1. Clone the Repository
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+git clone https://github.com/giancarlobianchi12/demo-project-1-commerce
+cd folder
+```
 
-## Learning Laravel
+### 2. Set Up the Environment
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+You can choose one of the two options below to set up the development environment:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## Laravel Sponsors
+Option 1: Using Sail
+```
+composer install \
+vendor/bin/sail up -d \
+vendor/bin/sail shell
+```
+Option 2: Using Docker Compose
+```
+cp .env.example .env
+composer install
+php artisan key:generate
+php artisan migrate --seed
+php artisan test
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Make sure to setup these credentiales in the .env file (for demo project purposes):
+- MERCADOLIBRE_CLIENT_ID=4170687618702922
+- MERCADOLIBRE_CLIENT_SECRET=qlnNIYC0vfEsmn8mCfCVLJxdm6Zrz94y
+- MERCADOLIBRE_REDIRECT_URI=https://localhost:3030/starter
+- MERCADOLIBRE_API_URI=https://api.mercadolibre.com
 
-### Premium Partners
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 3. Additional Notes
 
-## Contributing
+Credentials are pre-configured in the .env.example file to simplify the testing process.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. About the API
 
-## Code of Conduct
+This API allows an admin user to manage multiple "client" type users. These clients can integrate with the MercadoLibre API to:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Obtain the access token.
+Refresh the access token.
+Retrieve shipping orders.
+Use a webhook to change the status of orders.
 
-## Security Vulnerabilities
+### 5. How It Works
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+This is the Postman collection: https://www.postman.com/grey-flare-132319/workspace/test/collection/1702613-cfa28fc3-1e2e-46e1-8f43-6b7a3dfb8ead?action=share&creator=1702613&active-environment=1702613-e51c7c01-4781-465e-bec5-8fd7d58842ca
 
-## License
+1. First, log in as an admin user (we created this user in a seeder) using the "Login" endpoint in Postman.
+2. Create a new client user. Once logged in as an admin, use the "Create User" endpoint and select the "client" type.
+Log in as the client user using the same endpoint as the admin.
+MercadoLibre Authentication:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- For this implementation, the credentials are provided in the .env.example (I know this isn't recommended), along with the URL for authentication. Don't worry, these are test users and a MercadoLibre test application.
+
+3. Go to the browser and enter this URL to get the "code" from MercadoLibre. We'll use it to get the access token in the backend:
+
+- URL: https://auth.mercadolibre.com.ar/authorization?response_type=code&client_id=4170687618702922&redirect_uri=https://localhost:3030/starter
+
+Use the following test credentials:
+
+- Email: test_user_548505576@testuser.com
+- Password: RYiBuF7Xx3
+- If 2FA is required, use: 273320 (the last 6 digits of the user ID).
+After logging in, you'll receive a code in the URL, e.g., TG-67a7aae2b403520001290778-1652276660.
+
+4. Use the "Auth MercadoLibre" endpoint in Postman to complete the authentication by copying and pasting the code.
+
+That's it! Now you are authenticated with MercadoLibre.
+
+\
+Artisan Commands:
+
+I have created two artisan commands:
+
+- Refresh Token: mercadolibre:refresh-access-token. MercadoLibre access tokens expire approximately every 6 hours, so this command should be run to refresh the token.
+- Sync Orders: mercadolibre:sync-orders. When a seller receives a new sale, this command will retrieve the order and its shipment information.
+Job:
+
+\
+We have a webhook handler. When MercadoLibre receives an update, such as a shipment status change or an order update, MercadoLibre will send us this information. I've added an example webhook in Postman to change the order status. Please check the "Change Shipment Status" endpoint in Postman.

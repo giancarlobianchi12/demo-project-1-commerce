@@ -15,6 +15,7 @@ class UserFilter extends ModelFilter
     {
         return [
             'type',
+            'email',
         ];
     }
 }
