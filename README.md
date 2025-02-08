@@ -49,10 +49,10 @@ Credentials are pre-configured in the .env.example file to simplify the testing 
 
 This API allows an admin user to manage multiple "client" type users. These clients can integrate with the MercadoLibre API to:
 
-Obtain the access token.
-Refresh the access token.
-Retrieve shipping orders.
-Use a webhook to change the status of orders.
+- Obtain the access token.
+- Refresh the access token.
+- Retrieve shipping orders.
+- Use a webhook to change the status of orders.
 
 ### 5. How It Works
 
@@ -61,9 +61,6 @@ This is the Postman collection: https://www.postman.com/grey-flare-132319/worksp
 1. First, log in as an admin user (we created this user in a seeder) using the "Login" endpoint in Postman.
 2. Create a new client user. Once logged in as an admin, use the "Create User" endpoint and select the "client" type.
 Log in as the client user using the same endpoint as the admin.
-MercadoLibre Authentication:
-
-- For this implementation, the credentials are provided in the .env.example (I know this isn't recommended), along with the URL for authentication. Don't worry, these are test users and a MercadoLibre test application.
 
 3. Go to the browser and enter this URL to get the "code" from MercadoLibre. We'll use it to get the access token in the backend:
 
