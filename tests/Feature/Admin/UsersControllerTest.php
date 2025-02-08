@@ -8,7 +8,7 @@ use Illuminate\Testing\Fluent\AssertableJson;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
-class AdminUserControllerTest extends TestCase
+class UsersControllerTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -81,7 +81,7 @@ class AdminUserControllerTest extends TestCase
             );
     }
 
-    public function test_no_admin_can_not_create_users($type)
+    public function test_no_admin_can_not_create_users()
     {
         $user = $this->getUserClient();
 

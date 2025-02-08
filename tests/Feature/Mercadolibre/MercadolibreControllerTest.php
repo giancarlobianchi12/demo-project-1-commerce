@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Mercadolibre;
 
 use App\Enums\OrderStatusEnum;
 use App\Models\Order;
