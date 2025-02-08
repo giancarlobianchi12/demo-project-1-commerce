@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class ProcessMercadolibreRequestJob implements ShouldQueue
 {
@@ -20,89 +21,83 @@ class ProcessMercadolibreRequestJob implements ShouldQueue
 
     /**
      * Create a new job instance.
-     *
-     * @return void
      */
-    public function __construct(public array $request)
-    {
-        //
+    public function __construct(
+        protected array $request
+    ) {
     }
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
-        $mercadolibreService = new MercadolibreService();
+        try {
+            $mercadolibreService = new MercadolibreService();
 
-        $topic = $this->request['topic'];
-        $resource = $this->request['resource'];
-        $externalClientId = $this->request['user_id'];
+            $user = $this->getUser();
 
-        $user = User::where('external_id', $externalClientId)->first();
+            if (! $user) {
+                Log::warning('User not found for external ID: '.($this->request['user_id']));
 
-        if (! $user) {
-            throw new Exception('External client id not found.');
+                return;
+            }
+
+            $response = $mercadolibreService->getFromResource($user, $this->request['resource']);
+
+            if (! $response) {
+                Log::warning("Empty response from MercadoLibre for resource: {$this->request['resource']}");
+
+                return;
+            }
+
+            match ($this->request['topic']) {
+                TopicTypeEnum::SHIPMENTS => $this->processShipment($response),
+                default => Log::info("Unhandled topic: {$this->request['topic']}"),
+            };
+        } catch (Exception $e) {
+            Log::error("Error processing MercadoLibre request: {$e->getMessage()}", [
+                'request' => $this->request,
+                'exception' => $e,
+            ]);
+        }
+    }
+
+    /**
+     * Get user by external ID.
+     */
+    private function getUser(): ?User
+    {
+        return User::where('external_id', $this->request['user_id'])->first();
+    }
+
+    /**
+     * Process a shipment update.
+     */
+    private function processShipment(array $response): void
+    {
+        $shipmentId = $response['id'] ?? null;
+        if (! $shipmentId) {
+            Log::warning('Missing shipment ID in response', ['response' => $response]);
+
+            return;
         }
 
-        $response = $mercadolibreService->getFromResource($user, $resource)->json();
+        $order = Order::where('external_shipment_id', $shipmentId)->first();
 
-        switch ($topic) {
-            case TopicTypeEnum::FLEX_HANDSHAKES:
-                preg_match('/\/shipments\/(\d+)\/assignment/', $this->request['resource'], $matches);
-                $shipmentId = $matches[1];
-                $order = Order::where('external_shipment_id', $shipmentId)->first();
+        if (! $order) {
+            Log::info("Order not found for shipment ID: $shipmentId");
 
-                if (! $order) {
-                    return;
-                }
-
-                if (! isset($response['driver_id'])) {
-                    return;
-                }
-
-                $driverId = $response['driver_id'];
-                $newDriver = User::where('external_id', $driverId)->where('type', 'driver')->first();
-
-                if (! $newDriver) {
-                    return;
-                }
-
-                $order->update(['driver_user_id' => $newDriver->id]);
-
-                break;
-
-            case TopicTypeEnum::SHIPMENTS:
-                $shipmentId = $response['id'] ?? null;
-
-                $order = Order::where('external_shipment_id', $shipmentId)->first();
-
-                if (! $order) {
-                    return;
-                }
-
-                $order->status = $response['status'];
-
-                if ($order->status === OrderStatusEnum::DELIVERED) {
-                    $order->delivered_at = $response['status_history']['date_delivered'] ?? null;
-                }
-
-                $order->save();
-
-                break;
-
-            case TopicTypeEnum::ORDERS:
-                $status = $response['status'] ?? null;
-
-                $order = Order::where('external_id', $response['id'])->firstOrFail();
-
-                if ($status === OrderStatusEnum::CANCELLED) {
-                    $order->update(['status' => OrderStatusEnum::CANCELLED]);
-                }
-
-                break;
+            return;
         }
+
+        $updateData = ['status' => $response['status']];
+
+        if ($response['status'] === OrderStatusEnum::DELIVERED) {
+            $updateData['delivered_at'] = $response['status_history']['date_delivered'] ?? null;
+        }
+
+        $order->update($updateData);
+        Log::info("Shipment updated for order ID: {$order->id}");
     }
 }
