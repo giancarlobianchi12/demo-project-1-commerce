@@ -30,24 +30,24 @@ class AdminUserControllerTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->actingAs($admin)->putJson(route('admin.users.update', $user->id), [
-            'name' => 'Some title',
+            'name' => 'Some name',
         ]);
 
-        $response->assertCreated();
+        $response->assertSuccessful();
         $user->refresh();
-        $this->assertEquals('Some title', $user->name);
+        $this->assertEquals('Some name', $user->name);
     }
 
     public static function userTypeDataProvider()
     {
         return [
+            'admin' => ['admin'],
             'client' => ['client'],
-            'driver' => ['driver'],
         ];
     }
 
     #[DataProvider('userTypeDataProvider')]
-    public function test_admin_create_user($type)
+    public function test_admin_create_user_with_different_types($type)
     {
         $user = $this->getUserAdmin();
 
@@ -79,5 +79,32 @@ class AdminUserControllerTest extends TestCase
                 fn (AssertableJson $json) => $json->count('data', $count)
                     ->etc()
             );
+    }
+
+    public function test_no_admin_can_not_create_users($type)
+    {
+        $user = $this->getUserClient();
+
+        $userData = User::factory()->make([
+            'type' => 'client',
+        ])->toArray();
+
+        $response = $this->actingAs($user)->postJson(route('admin.users.store', $user->id), [
+            ...$userData,
+            'password' => 'password',
+        ]);
+
+        $response->assertUnauthorized();
+    }
+
+    public function test_no_admin_can_not_get_users()
+    {
+        $user = $this->getUserClient();
+
+        User::factory(5)->create();
+
+        $response = $this->actingAs($user)->getJson(route('admin.users.show', User::first()->id));
+
+        $response->assertUnauthorized();
     }
 }

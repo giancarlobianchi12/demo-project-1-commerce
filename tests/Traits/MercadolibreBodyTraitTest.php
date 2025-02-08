@@ -46,7 +46,7 @@ trait MercadolibreBodyTraitTest
                 'dimensions' => '8.0x8.0x25.0,150.0',
             ],
         ],
-        'tracking_number' => '43052469151',
+        'tracking_number' => '44462102666',
         'cost_components' => [
             'loyal_discount' => 0,
             'special_discount' => 0,
@@ -54,7 +54,7 @@ trait MercadolibreBodyTraitTest
             'gap_discount' => 0,
             'ratio' => 4661.98,
         ],
-        'id' => 43052469151,
+        'id' => 44462102666,
         'tracking_method' => null,
         'last_updated' => '2024-01-29T00:02:23.199-04:00',
         'items_types' => [
@@ -266,9 +266,9 @@ trait MercadolibreBodyTraitTest
     protected $shipmentBodyRequest = [
         '_id' => '57d46e5c-8e4f-4174-a6fb-d8b969cce274',
         'topic' => 'shipments',
-        'resource' => '/shipments/43052469151',
+        'resource' => '/shipments/44462102666',
         'user_id' => 1652273320,
-        'application_id' => 3885598677369409,
+        'application_id' => 4170687618702922,
         'sent' => '2024-01-29T03:57:35.321Z',
         'attempts' => 1,
         'received' => '2024-01-29T03:57:35.271Z',

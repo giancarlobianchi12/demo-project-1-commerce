@@ -56,6 +56,9 @@ class ProcessMercadolibreRequestJob implements ShouldQueue
                 default => Log::info("Unhandled topic: {$this->request['topic']}"),
             };
         } catch (Exception $e) {
+            var_dump($e->getMessage());
+            exit;
+
             Log::error("Error processing MercadoLibre request: {$e->getMessage()}", [
                 'request' => $this->request,
                 'exception' => $e,

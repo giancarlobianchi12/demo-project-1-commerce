@@ -39,13 +39,4 @@ abstract class TestCase extends BaseTestCase
 
         return $user;
     }
-
-    public function getUserDriver(): User
-    {
-        $user = User::factory()->create([
-            'type' => UserTypeEnum::DRIVER,
-        ]);
-
-        return $user;
-    }
 }

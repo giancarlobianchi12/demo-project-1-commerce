@@ -13,7 +13,7 @@ class AdminAuthControllerTest extends TestCase
     {
         $user = $this->getUserAdmin();
 
-        $response = $this->postJson(route('admin.auth.login', [
+        $response = $this->postJson(route('auth.login', [
             'email' => $user->email,
             'password' => 'password',
         ]));
@@ -25,7 +25,7 @@ class AdminAuthControllerTest extends TestCase
     {
         $user = $this->getUserAdmin();
 
-        $response = $this->actingAs($user)->getJson(route('admin.auth.me2'));
+        $response = $this->actingAs($user)->getJson(route('auth.me'));
 
         $response->assertSuccessful();
     }
@@ -34,7 +34,7 @@ class AdminAuthControllerTest extends TestCase
     {
         $user = $this->getUserAdmin();
 
-        $response = $this->actingAs($user)->postJson(route('admin.auth.logout'));
+        $response = $this->actingAs($user)->postJson(route('auth.logout'));
 
         $response->assertNoContent();
     }

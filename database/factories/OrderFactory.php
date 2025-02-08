@@ -3,10 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\OrderStatusEnum;
-use App\Enums\ZoneTypeEnum;
-use App\Models\Receiver;
 use App\Models\User;
-use App\Models\Zone;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -26,11 +23,8 @@ class OrderFactory extends Factory
             'title' => fake()->title(),
             'status' => OrderStatusEnum::getRandomValue(),
             'price' => fake()->numberBetween(1, 99999).'.01',
-            'receiver_id' => Receiver::factory(),
             'external_shipment_id' => fake()->randomNumber(9),
-            'zone_id' => Zone::where('name', ZoneTypeEnum::getRandomValue())->first()->id,
-            'driver_user_id' => User::factory()->isDriver(),
-            'client_user_id' => User::factory()->isClient(),
+            'user_id' => User::factory()->isDriver(),
         ];
     }
 }
