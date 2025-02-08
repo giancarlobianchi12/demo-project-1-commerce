@@ -59,6 +59,9 @@ class RefreshMercadolibreAccessTokenCommand extends Command
 
                 $this->info("Access token for user $user->id was updated successfully");
             } catch (\Exception $e) {
+                var_dump($e->getMessage());
+                exit;
+
                 $this->error("Access token for user $user->id was not updated successfully");
             }
         }
