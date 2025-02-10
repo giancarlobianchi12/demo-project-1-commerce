@@ -15,23 +15,15 @@ cd folder
 
 ### 2. Set Up the Environment
 
-You can choose one of the two options below to set up the development environment:
-
-
-
-Option 1: Using Sail
+Option 1: Using Sail / Docker
 ```
 composer install \
 vendor/bin/sail up -d \
 vendor/bin/sail shell
-```
-Option 2: Using Docker Compose
-```
-cp .env.example .env
-composer install
 php artisan key:generate
 php artisan migrate --seed
 php artisan test
+
 ```
 
 Make sure to setup these credentiales in the .env file (for demo project purposes):
@@ -84,7 +76,7 @@ I have created two artisan commands:
 
 - Refresh Token: mercadolibre:refresh-access-token. MercadoLibre access tokens expire approximately every 6 hours, so this command should be run to refresh the token.
 - Sync Orders: mercadolibre:sync-orders. When a seller receives a new sale, this command will retrieve the order and its shipment information.
-Job:
+
 
 \
 We have a webhook handler. When MercadoLibre receives an update, such as a shipment status change or an order update, MercadoLibre will send us this information. I've added an example webhook in Postman to change the order status. Please check the "Change Shipment Status" endpoint in Postman.
