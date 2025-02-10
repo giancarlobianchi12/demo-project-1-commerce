@@ -15,7 +15,7 @@ cd folder
 
 ### 2. Set Up the Environment
 
-Option 1: Using Sail / Docker
+Using Sail / Docker
 ```
 composer install \
 vendor/bin/sail up -d \
